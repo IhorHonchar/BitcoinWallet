@@ -1,4 +1,4 @@
-package ua.honchar.bitcoinwallet.ui.theme
+package ua.honchar.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

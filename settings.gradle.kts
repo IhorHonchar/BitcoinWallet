@@ -21,4 +21,11 @@ dependencyResolutionManagement {
 
 rootProject.name = "BitcoinWallet"
 include(":app")
- 
+include(":feature")
+include(":feature:wallet")
+include(":feature:wallet:data")
+include(":feature:wallet:domain")
+include(":feature:wallet:ui")
+include(":navigation")
+include(":core")
+include(":core:ui")
