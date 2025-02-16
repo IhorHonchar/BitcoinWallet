@@ -9,7 +9,7 @@ import ua.honchar.domain.repository.WalletRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class RepositoryModule {
+internal abstract class WalletRepositoryModule {
 
     @Binds
     abstract fun bindWalletRepository(repository: WalletRepositoryImpl): WalletRepository

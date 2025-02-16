@@ -55,6 +55,7 @@ dependencies {
     implementation(project(":core:db"))
     implementation(project(":navigation"))
     implementation(project(":feature:wallet:data"))
+    implementation(project(":feature:addTransaction:data"))
     implementation(libs.androidx.navigation.compose)
     implementation(libs.javax.inject)
     implementation(libs.hilt.android)

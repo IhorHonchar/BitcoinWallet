@@ -7,6 +7,6 @@ enum class TransactionCategory {
 
     companion object {
         fun getCategory(category: String) = entries.find { it() == category }
-        fun costCategories(): List<String> = entries.filter { it != REFILL }.map { it() }
+        fun costCategories(): List<TransactionCategory> = entries.filter { it != REFILL }
     }
 }

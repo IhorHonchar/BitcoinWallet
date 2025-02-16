@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import ua.honchar.ui.navigation.WALLET_SCREEN
-import ua.honchar.ui.navigation.wallet
+import ua.honchar.presentation.navigation.ADD_TRANSACTION_SCREEN
+import ua.honchar.presentation.navigation.WALLET_SCREEN
+import ua.honchar.presentation.navigation.addTransaction
+import ua.honchar.presentation.navigation.wallet
 
 @Composable
 fun AppNavGraph(
@@ -17,6 +19,11 @@ fun AppNavGraph(
         modifier = modifier,
         startDestination = WALLET_SCREEN
     ) {
-        wallet()
+        wallet(navigateToAddTransaction = {
+            navController.navigate(ADD_TRANSACTION_SCREEN)
+        })
+        addTransaction(navigateBack = {
+            navController.popBackStack()
+        })
     }
 }

@@ -19,13 +19,13 @@ class MVIDelegate<UiState, UiAction, UiEffect>(initialUiState: UiState) : MVI<Ui
     private val _uiEffect by lazy { Channel<UiEffect>() }
     override val uiEffect: Flow<UiEffect> by lazy { _uiEffect.receiveAsFlow() }
 
-    override fun onAction(uiAction: UiAction) = Unit
+    override fun onAction(action: UiAction) = Unit
 
     override fun updateUiState(block: UiState.() -> UiState) {
         _uiState.update(block)
     }
 
-    override suspend fun emitUiEffect(uiEffect: UiEffect) {
-        _uiEffect.send(uiEffect)
+    override suspend fun emitUiEffect(effect: UiEffect) {
+        _uiEffect.send(effect)
     }
 }

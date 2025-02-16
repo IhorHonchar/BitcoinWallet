@@ -20,15 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BitcoinWalletTheme {
-                val navController = rememberNavController()
-
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Modifier.padding(innerPadding)
-                    AppNavGraph(
-                        modifier = Modifier.padding(innerPadding),
-                        navController = navController
-                    )
-                }
+                AppNavGraph(navController = rememberNavController())
             }
         }
     }

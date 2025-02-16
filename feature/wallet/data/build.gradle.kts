@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.hilt.android)
     implementation(project(":feature:wallet:domain"))
+    implementation(project(":feature:addTransaction:domain"))
     implementation(project(":core:common"))
     implementation(project(":core:db"))
     ksp(libs.hilt.android.compiler)

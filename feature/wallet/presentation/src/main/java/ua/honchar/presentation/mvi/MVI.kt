@@ -3,21 +3,21 @@ package ua.honchar.presentation.mvi
 import ua.honchar.domain.model.Transaction
 import ua.honchar.presentation.EnterIncomeDialogState
 
-data class UiState(
+data class WalletState(
     val balance: String = "0",
     val currencyRate: String = "",
     val transactions: List<Transaction>? = null,
     val dialogState: EnterIncomeDialogState = EnterIncomeDialogState()
 )
 
-sealed interface UiAction {
-    data object OnAddTransactionClick: UiAction
-    data object OnAddClick: UiAction
-    data object OnSaveClick: UiAction
-    data object OnCancelClick: UiAction
-    data class EnteredIncome(val value: String): UiAction
+sealed interface WalletAction {
+    data object OnAddTransactionClick: WalletAction
+    data object OnAddClick: WalletAction
+    data object OnSaveClick: WalletAction
+    data object OnCancelClick: WalletAction
+    data class EnteredIncome(val value: String): WalletAction
 }
 
-sealed interface UiEffect {
-    data object NavigateToAddTransaction: UiEffect
+sealed interface WalletEffect {
+    data object NavigateToAddTransaction: WalletEffect
 }

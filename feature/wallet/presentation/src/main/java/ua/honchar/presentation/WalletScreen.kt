@@ -1,6 +1,6 @@
 package ua.honchar.presentation
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,107 +18,105 @@ import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import ua.honchar.domain.model.Transaction
-import ua.honchar.ui.R
-import ua.honchar.presentation.mvi.UiAction
-import ua.honchar.presentation.mvi.UiEffect
-import ua.honchar.presentation.mvi.UiState
+import ua.honchar.domain.model.TransactionCategory
+import ua.honchar.presentation.mvi.WalletAction
+import ua.honchar.presentation.mvi.WalletState
 import ua.honchar.ui.theme.BitcoinWalletTheme
 import ua.honchar.ui.theme.Typography
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun WalletScreen(
-    state: UiState,
-    onAction: (UiAction) -> Unit,
+    state: WalletState,
+    onAction: (WalletAction) -> Unit,
 ) {
     EnterIncomeDialogRoot(state.dialogState, onAction)
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Blue)
+                .padding(innerPadding)
+                .fillMaxSize()
         ) {
-            Text(
-                text = state.currencyRate,
-                style = Typography.titleMedium,
-                modifier = Modifier.align(Alignment.End)
-            )
-            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = state.balance,
-                    style = Typography.displayLarge,
+                    text = state.currencyRate,
+                    style = Typography.titleMedium,
+                    modifier = Modifier.align(Alignment.End)
                 )
-                IconButton(
+                Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Text(
+                        text = state.balance,
+                        style = Typography.displayLarge,
+                    )
+                    IconButton(
+                        onClick = {
+                            onAction(WalletAction.OnAddClick)
+                        },
+                        modifier = Modifier
+                            .padding(start = 5.dp)
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.AddCircle,
+                            contentDescription = "add",
+                            modifier = Modifier
+                                .size(Typography.displayLarge.fontSize.value.dp)
+                        )
+                    }
+                }
+                Button(
                     onClick = {
-                        onAction(UiAction.OnAddClick)
+                        onAction(WalletAction.OnAddTransactionClick)
                     },
                     modifier = Modifier
-                        .padding(start = 5.dp)
-                        .align(Alignment.CenterVertically)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 10.dp, bottom = 5.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.AddCircle,
-                        contentDescription = "add",
-                        modifier = Modifier
-                            .size(Typography.displayLarge.fontSize.value.dp)
-                    )
+                    Row {
+                        Icon(
+                            imageVector = Icons.Rounded.Add,
+                            contentDescription = null,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                        Text(
+                            text = "Add transaction",
+                            style = Typography.titleMedium,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
                 }
             }
-            Button(
-                onClick = {
-                    // todo implement
-                },
+            Text(
+                text = "Transactions :",
+                style = Typography.titleLarge,
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 10.dp, bottom = 5.dp)
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, top = 5.dp, bottom = 10.dp)
+            )
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(
+                    vertical = 5.dp,
+                    horizontal = 3.dp
+                ),
             ) {
-                Row {
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = null,
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                    Text(
-                        text = "Add transaction",
-                        style = Typography.titleMedium,
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
+                items(items = state.transactions.orEmpty()) {
+                    TransactionItem(it)
                 }
-            }
-        }
-        Text(
-            text = "Transactions :",
-            style = Typography.titleLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Blue)
-                .padding(start = 10.dp, top = 5.dp, bottom = 10.dp)
-        )
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .background(Color.Gray),
-            contentPadding = PaddingValues(
-                vertical = 5.dp,
-                horizontal = 3.dp
-            ),
-        ) {
-            items(items = state.transactions.orEmpty()) {
-                TransactionItem(it)
             }
         }
     }
+
 }
 
 @Composable
@@ -163,6 +161,58 @@ private fun TransactionItem(transaction: Transaction) {
 @Composable
 private fun ScreenPreview() {
     BitcoinWalletTheme {
-        WalletScreen(UiState(), {})
+        WalletScreen(
+            WalletState(
+                transactions = listOf(
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "25.10.2022",
+                        time = "14:56"
+                    ),
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "25.10.2022",
+                        time = "14:54"
+                    ),
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "25.10.2022",
+                        time = "13:56"
+                    ),
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "25.10.2022",
+                        time = "12:56"
+                    ),
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "24.10.2022",
+                        time = "14:56"
+                    ),
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "24.10.2022",
+                        time = "14:54"
+                    ),
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "24.10.2022",
+                        time = "13:56"
+                    ),
+                    Transaction(
+                        300.0,
+                        TransactionCategory.ELECTRONICS(),
+                        date = "24.10.2022",
+                        time = "12:56"
+                    )
+                )
+            ), {})
     }
 }

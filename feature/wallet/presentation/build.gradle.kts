@@ -48,6 +48,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:common"))
     implementation(project(":feature:wallet:domain"))
+    implementation(project(":feature:addTransaction:domain"))
     implementation(libs.javax.inject)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)

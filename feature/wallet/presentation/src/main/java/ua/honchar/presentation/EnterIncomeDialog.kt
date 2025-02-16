@@ -15,15 +15,12 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ua.honchar.ui.R
-import ua.honchar.presentation.mvi.UiAction
+import ua.honchar.presentation.mvi.WalletAction
 import ua.honchar.ui.theme.BitcoinWalletTheme
 import ua.honchar.ui.theme.Typography
 
@@ -33,7 +30,7 @@ data class EnterIncomeDialogState(
 )
 
 @Composable
-fun EnterIncomeDialogRoot(state: EnterIncomeDialogState, onAction: (UiAction) -> Unit) {
+fun EnterIncomeDialogRoot(state: EnterIncomeDialogState, onAction: (WalletAction) -> Unit) {
     if (state.visible) {
         EnterIncomeDialog(state, onAction)
     }
@@ -41,7 +38,7 @@ fun EnterIncomeDialogRoot(state: EnterIncomeDialogState, onAction: (UiAction) ->
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnterIncomeDialog(state: EnterIncomeDialogState, onAction: (UiAction) -> Unit) {
+fun EnterIncomeDialog(state: EnterIncomeDialogState, onAction: (WalletAction) -> Unit) {
     val modalBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
@@ -57,7 +54,7 @@ fun EnterIncomeDialog(state: EnterIncomeDialogState, onAction: (UiAction) -> Uni
 
     ModalBottomSheet(
         onDismissRequest = {
-            onAction(UiAction.OnCancelClick)
+            onAction(WalletAction.OnCancelClick)
         },
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
@@ -66,15 +63,15 @@ fun EnterIncomeDialog(state: EnterIncomeDialogState, onAction: (UiAction) -> Uni
         Content(
             state = state,
             cancel = {
-                afterHide { onAction(UiAction.OnCancelClick) }
+                afterHide { onAction(WalletAction.OnCancelClick) }
             },
             save = {
                 afterHide {
-                    onAction(UiAction.OnSaveClick)
+                    onAction(WalletAction.OnSaveClick)
                 }
             },
             entered = {
-                onAction(UiAction.EnteredIncome(it))
+                onAction(WalletAction.EnteredIncome(it))
             }
         )
     }

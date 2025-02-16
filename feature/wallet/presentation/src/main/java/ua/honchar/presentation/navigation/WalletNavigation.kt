@@ -8,7 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import ua.honchar.presentation.WalletScreen
 import ua.honchar.presentation.WalletViewModel
-import ua.honchar.presentation.mvi.UiEffect
+import ua.honchar.presentation.mvi.WalletEffect
 
 const val WALLET_SCREEN = "wallet-screen"
 
@@ -23,7 +23,7 @@ fun NavGraphBuilder.wallet(
         LaunchedEffect(key1 = Unit) {
             effect.collect {
                 when (it) {
-                    UiEffect.NavigateToAddTransaction -> navigateToAddTransaction()
+                    WalletEffect.NavigateToAddTransaction -> navigateToAddTransaction()
                 }
             }
         }

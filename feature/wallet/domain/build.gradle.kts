@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.room)
     implementation(libs.javax.inject)
     implementation(project(":core:common"))
+    implementation(project(":feature:addTransaction:domain"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
