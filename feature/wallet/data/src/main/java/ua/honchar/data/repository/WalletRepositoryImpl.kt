@@ -43,4 +43,8 @@ class WalletRepositoryImpl @Inject constructor(
     override fun getBalance(): Flow<Double> {
         return dao.getAllTransactionsAmount().map { it.sum() }
     }
+
+    override fun getBitcoinExchangeRate(): String {
+
+    }
 }

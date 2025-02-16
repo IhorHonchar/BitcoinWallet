@@ -24,6 +24,8 @@ hiltCompolier = "1.2.0"
 ksp = "2.1.0-1.0.29"
 room = "2.6.1"
 paging = "3.2.0-rc01"
+retrofit = "2.11.0"
+okHttp3 = "4.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,11 +64,19 @@ hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-com
 room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
-room-paging = { group = "androidx.room", name="room-paging", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 
 ## Paging
 paging = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+
+##Retrofit
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-contertor = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+
+## OkHttp
+okHttp3-login = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okHttp3" }
+okHttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okHttp3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

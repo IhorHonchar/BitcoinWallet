@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(project(":core:ui"))
     implementation(project(":core:db"))
+    implementation(project(":core:network"))
     implementation(project(":navigation"))
     implementation(project(":feature:wallet:data"))
     implementation(project(":feature:addTransaction:data"))

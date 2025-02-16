@@ -7,4 +7,5 @@ import ua.honchar.domain.model.Transaction
 interface WalletRepository {
     fun transactionsPaged(): Flow<PagingData<Transaction>>
     fun getBalance(): Flow<Double>
+    fun getBitcoinExchangeRate(): String
 }
