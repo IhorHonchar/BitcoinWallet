@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.room)
     implementation(libs.javax.inject)
+    implementation(libs.paging)
     implementation(project(":core:common"))
     implementation(project(":feature:addTransaction:domain"))
     testImplementation(libs.junit)

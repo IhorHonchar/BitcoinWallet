@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "ua.honchar.data"
+    namespace = "ua.honchar.db"
     compileSdk = 35
 
     defaultConfig {
@@ -36,14 +36,14 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
     implementation(libs.room)
     implementation(libs.room.ktx)
     implementation(libs.hilt.android)
     implementation(libs.paging)
-    implementation(project(":feature:wallet:domain"))
-    implementation(project(":feature:addTransaction:domain"))
-    implementation(project(":core:common"))
-    implementation(project(":core:db"))
+    implementation(libs.room.paging)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)

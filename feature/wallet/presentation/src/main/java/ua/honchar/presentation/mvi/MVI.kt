@@ -1,12 +1,10 @@
 package ua.honchar.presentation.mvi
 
-import ua.honchar.domain.model.Transaction
 import ua.honchar.presentation.EnterIncomeDialogState
 
 data class WalletState(
     val balance: String = "0",
     val currencyRate: String = "",
-    val transactions: List<Transaction>? = null,
     val dialogState: EnterIncomeDialogState = EnterIncomeDialogState()
 )
 

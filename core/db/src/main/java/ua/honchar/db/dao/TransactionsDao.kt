@@ -1,5 +1,6 @@
 package ua.honchar.db.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,5 +15,8 @@ interface TransactionsDao {
     suspend fun saveTransaction(transaction: TransactionDB)
 
     @Query("select * from transactions order by fullTime desc")
-    fun getTransactions(): Flow<List<TransactionDB>>
+    fun getTransactionsPaged(): PagingSource<Int, TransactionDB>
+
+    @Query("select amount from transactions")
+    fun getAllTransactionsAmount(): Flow<List<Double>>
 }

@@ -1,6 +1,7 @@
 package ua.honchar.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,16 +19,21 @@ import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.flow
 import ua.honchar.domain.model.Transaction
-import ua.honchar.domain.model.TransactionCategory
 import ua.honchar.presentation.mvi.WalletAction
 import ua.honchar.presentation.mvi.WalletState
 import ua.honchar.ui.theme.BitcoinWalletTheme
@@ -37,8 +43,12 @@ import ua.honchar.ui.theme.Typography
 @Composable
 internal fun WalletScreen(
     state: WalletState,
+    transactions: LazyPagingItems<Transaction>,
     onAction: (WalletAction) -> Unit,
 ) {
+    val dateTransactionsMap =
+        transactions.itemSnapshotList.filterNotNull().groupBy { it.date }
+
     EnterIncomeDialogRoot(state.dialogState, onAction)
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -104,14 +114,40 @@ internal fun WalletScreen(
                     .padding(start = 10.dp, top = 5.dp, bottom = 10.dp)
             )
             LazyColumn(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp),
                 contentPadding = PaddingValues(
                     vertical = 5.dp,
                     horizontal = 3.dp
                 ),
             ) {
-                items(items = state.transactions.orEmpty()) {
-                    TransactionItem(it)
+                dateTransactionsMap.forEach { dateTransactions ->
+                    val date = dateTransactions.key
+                    val items = dateTransactions.value
+                    stickyHeader {
+                        Text(
+                            text = date,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background)
+                        )
+                    }
+                    items(items) { item ->
+                        TransactionItem(item)
+                    }
+                }
+
+                if (dateTransactionsMap.isEmpty()) {
+                    item {
+                        Text(
+                            text = "There no any transactions",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp)
+                        )
+                    }
                 }
             }
         }
@@ -160,59 +196,13 @@ private fun TransactionItem(transaction: Transaction) {
 @PreviewLightDark
 @Composable
 private fun ScreenPreview() {
+    val list =
+        flow<PagingData<Transaction>> { PagingData.empty<Transaction>() }.collectAsLazyPagingItems()
     BitcoinWalletTheme {
         WalletScreen(
-            WalletState(
-                transactions = listOf(
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "25.10.2022",
-                        time = "14:56"
-                    ),
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "25.10.2022",
-                        time = "14:54"
-                    ),
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "25.10.2022",
-                        time = "13:56"
-                    ),
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "25.10.2022",
-                        time = "12:56"
-                    ),
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "24.10.2022",
-                        time = "14:56"
-                    ),
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "24.10.2022",
-                        time = "14:54"
-                    ),
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "24.10.2022",
-                        time = "13:56"
-                    ),
-                    Transaction(
-                        300.0,
-                        TransactionCategory.ELECTRONICS(),
-                        date = "24.10.2022",
-                        time = "12:56"
-                    )
-                )
-            ), {})
+            state = WalletState(),
+            transactions = list,
+            {}
+        )
     }
 }

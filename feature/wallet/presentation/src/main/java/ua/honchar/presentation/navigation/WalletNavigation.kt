@@ -6,6 +6,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.paging.compose.collectAsLazyPagingItems
 import ua.honchar.presentation.WalletScreen
 import ua.honchar.presentation.WalletViewModel
 import ua.honchar.presentation.mvi.WalletEffect
@@ -19,6 +20,7 @@ fun NavGraphBuilder.wallet(
         val viewModel: WalletViewModel = hiltViewModel()
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         val effect = viewModel.uiEffect
+        val transactions = viewModel.transactions.collectAsLazyPagingItems()
 
         LaunchedEffect(key1 = Unit) {
             effect.collect {
@@ -30,6 +32,7 @@ fun NavGraphBuilder.wallet(
 
         WalletScreen(
             state = state,
+            transactions = transactions,
             onAction = viewModel::onAction
         )
     }

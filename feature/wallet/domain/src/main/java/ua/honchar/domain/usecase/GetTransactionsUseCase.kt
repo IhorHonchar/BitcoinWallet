@@ -1,5 +1,6 @@
 package ua.honchar.domain.usecase
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import ua.honchar.domain.model.Transaction
 import ua.honchar.domain.repository.WalletRepository
@@ -9,5 +10,5 @@ class GetTransactionsUseCase @Inject constructor(
     private val repository: WalletRepository
 ) {
 
-    operator fun invoke(): Flow<List<Transaction>> = repository.transactions()
+    operator fun invoke(): Flow<PagingData<Transaction>> = repository.transactionsPaged()
 }

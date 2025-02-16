@@ -56,7 +56,7 @@ internal class AddTransactionViewModel @Inject constructor(
     private fun addTransaction() = viewModelScope.launch(Dispatchers.IO) {
         val amount = getAmount() ?: return@launch
         val category = getCategory() ?: return@launch
-        saveTransactionUseCase(amount, category)
+        saveTransactionUseCase(amount.unaryMinus(), category)
             .onSuccess {
                 backClick()
             }.onFailure {
