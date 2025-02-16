@@ -1,4 +1,4 @@
-package ua.honchar.ui
+package ua.honchar.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -23,23 +23,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import ua.honchar.domain.model.Transaction
-import ua.honchar.ui.mvi.UiAction
-import ua.honchar.ui.mvi.UiEffect
-import ua.honchar.ui.mvi.UiState
+import ua.honchar.ui.R
+import ua.honchar.presentation.mvi.UiAction
+import ua.honchar.presentation.mvi.UiEffect
+import ua.honchar.presentation.mvi.UiState
 import ua.honchar.ui.theme.BitcoinWalletTheme
 import ua.honchar.ui.theme.Typography
 
 @Composable
 internal fun WalletScreen(
     state: UiState,
-    effect: Flow<UiEffect>,
-    onAction: (UiAction) -> Unit
+    onAction: (UiAction) -> Unit,
 ) {
+    EnterIncomeDialogRoot(state.dialogState, onAction)
+
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -47,13 +50,13 @@ internal fun WalletScreen(
                 .background(Color.Blue)
         ) {
             Text(
-                text = "currency rate",
+                text = state.currencyRate,
                 style = Typography.titleMedium,
                 modifier = Modifier.align(Alignment.End)
             )
             Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Text(
-                    text = "80 000", // todo
+                    text = state.balance,
                     style = Typography.displayLarge,
                 )
                 IconButton(
@@ -87,7 +90,7 @@ internal fun WalletScreen(
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                     Text(
-                        text = "Add transaction", // todo
+                        text = "Add transaction",
                         style = Typography.titleMedium,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
@@ -111,9 +114,9 @@ internal fun WalletScreen(
                 horizontal = 3.dp
             ),
         ) {
-           items(items = state.transactions.orEmpty()) {
-               TransactionItem(it)
-           }
+            items(items = state.transactions.orEmpty()) {
+                TransactionItem(it)
+            }
         }
     }
 }
@@ -160,6 +163,6 @@ private fun TransactionItem(transaction: Transaction) {
 @Composable
 private fun ScreenPreview() {
     BitcoinWalletTheme {
-        WalletScreen(UiState(), emptyFlow(), {})
+        WalletScreen(UiState(), {})
     }
 }
