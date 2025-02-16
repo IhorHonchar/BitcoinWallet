@@ -25,11 +25,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import ua.honchar.domain.model.Transaction
+import ua.honchar.ui.mvi.UiAction
+import ua.honchar.ui.mvi.UiEffect
+import ua.honchar.ui.mvi.UiState
 import ua.honchar.ui.theme.BitcoinWalletTheme
 import ua.honchar.ui.theme.Typography
 
 @Composable
-internal fun WalletScreen(list: List<Int> = List(30) { it }) {
+internal fun WalletScreen(
+    state: UiState,
+    effect: Flow<UiEffect>,
+    onAction: (UiAction) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -48,7 +58,7 @@ internal fun WalletScreen(list: List<Int> = List(30) { it }) {
                 )
                 IconButton(
                     onClick = {
-                        // todo implement
+                        onAction(UiAction.OnAddClick)
                     },
                     modifier = Modifier
                         .padding(start = 5.dp)
@@ -101,17 +111,16 @@ internal fun WalletScreen(list: List<Int> = List(30) { it }) {
                 horizontal = 3.dp
             ),
         ) {
-            items(list) {
-                TransactionItem(it)
-            }
+           items(items = state.transactions.orEmpty()) {
+               TransactionItem(it)
+           }
         }
     }
 }
 
 @Composable
-private fun TransactionItem(i: Int) {
-    val isEvent = i % 2 == 0
-    val (icon, color) = if (isEvent) Icons.Outlined.KeyboardArrowUp to Color.Green
+private fun TransactionItem(transaction: Transaction) {
+    val (icon, color) = if (transaction.amount > 0) Icons.Outlined.KeyboardArrowUp to Color.Green
     else Icons.Outlined.KeyboardArrowDown to Color.Red
     Row(
         modifier = Modifier
@@ -127,12 +136,12 @@ private fun TransactionItem(i: Int) {
                 .align(Alignment.CenterVertically),
         )
         Text(
-            text = "100",
+            text = transaction.amount.toString(),
             style = Typography.headlineMedium,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
         Text(
-            text = "restaurant",
+            text = transaction.category,
             style = Typography.headlineMedium,
             modifier = Modifier
                 .padding(horizontal = 10.dp)
@@ -140,7 +149,7 @@ private fun TransactionItem(i: Int) {
                 .weight(1f)
         )
         Text(
-            text = "14:58",
+            text = transaction.time,
             style = Typography.bodyMedium,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
@@ -151,6 +160,6 @@ private fun TransactionItem(i: Int) {
 @Composable
 private fun ScreenPreview() {
     BitcoinWalletTheme {
-        WalletScreen()
+        WalletScreen(UiState(), emptyFlow(), {})
     }
 }
