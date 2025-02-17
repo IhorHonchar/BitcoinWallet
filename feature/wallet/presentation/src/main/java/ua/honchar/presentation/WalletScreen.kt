@@ -21,8 +21,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,9 +36,12 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import ua.honchar.domain.model.Transaction
 import ua.honchar.presentation.mvi.WalletAction
+import ua.honchar.presentation.mvi.WalletEffect
 import ua.honchar.presentation.mvi.WalletState
 import ua.honchar.ui.theme.BitcoinWalletTheme
 import ua.honchar.ui.theme.Typography
@@ -43,15 +50,34 @@ import ua.honchar.ui.theme.Typography
 @Composable
 internal fun WalletScreen(
     state: WalletState,
+    effect: Flow<WalletEffect>,
     transactions: LazyPagingItems<Transaction>,
     onAction: (WalletAction) -> Unit,
+    navigateToAddTransaction: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(key1 = Unit) {
+        effect.collect {
+            when (it) {
+                WalletEffect.NavigateToAddTransaction -> navigateToAddTransaction()
+                is WalletEffect.ShowSnackBar -> snackbarHostState.showSnackbar(
+                    message = it.message,
+                    withDismissAction = true
+                )
+            }
+        }
+    }
+
     val dateTransactionsMap =
         transactions.itemSnapshotList.filterNotNull().groupBy { it.date }
 
     EnterIncomeDialogRoot(state.dialogState, onAction)
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -61,7 +87,9 @@ internal fun WalletScreen(
                 Text(
                     text = state.currencyRate,
                     style = Typography.titleMedium,
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(end = 12.dp, top = 12.dp, bottom = 6.dp)
                 )
                 Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     Text(
@@ -200,9 +228,10 @@ private fun ScreenPreview() {
         flow<PagingData<Transaction>> { PagingData.empty<Transaction>() }.collectAsLazyPagingItems()
     BitcoinWalletTheme {
         WalletScreen(
-            state = WalletState(),
+            state = WalletState(currencyRate = "12"),
+            effect = emptyFlow(),
             transactions = list,
-            {}
+            {}, {}
         )
     }
 }

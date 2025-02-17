@@ -9,13 +9,14 @@ data class WalletState(
 )
 
 sealed interface WalletAction {
-    data object OnAddTransactionClick: WalletAction
-    data object OnAddClick: WalletAction
-    data object OnSaveClick: WalletAction
-    data object OnCancelClick: WalletAction
-    data class EnteredIncome(val value: String): WalletAction
+    data object OnAddTransactionClick : WalletAction
+    data object OnAddClick : WalletAction
+    data object OnSaveClick : WalletAction
+    data object OnCancelClick : WalletAction
+    data class EnteredIncome(val value: String) : WalletAction
 }
 
 sealed interface WalletEffect {
-    data object NavigateToAddTransaction: WalletEffect
+    data object NavigateToAddTransaction : WalletEffect
+    data class ShowSnackBar(val message: String) : WalletEffect
 }

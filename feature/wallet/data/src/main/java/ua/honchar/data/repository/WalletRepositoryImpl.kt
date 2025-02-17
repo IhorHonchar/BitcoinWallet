@@ -6,17 +6,21 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import ua.honchar.common.Resource
+import ua.honchar.data.api.CoinsApi
 import ua.honchar.db.dao.TransactionsDao
 import ua.honchar.db.entity.TransactionDB
 import ua.honchar.domain.model.Transaction
 import ua.honchar.domain.repository.WalletRepository
+import ua.honchar.network.safeApiCall
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
 class WalletRepositoryImpl @Inject constructor(
-    private val dao: TransactionsDao
+    private val dao: TransactionsDao,
+    private val api: CoinsApi
 ) : WalletRepository {
 
     override fun transactionsPaged(): Flow<PagingData<Transaction>> {
@@ -44,7 +48,10 @@ class WalletRepositoryImpl @Inject constructor(
         return dao.getAllTransactionsAmount().map { it.sum() }
     }
 
-    override fun getBitcoinExchangeRate(): String {
-
+    override suspend fun getBitcoinExchangeRate(): Resource<String> {
+        return safeApiCall {
+            val response = api.getBitcoinExchangeRate()
+            response.mData?.rateUsd.orEmpty()
+        }
     }
 }

@@ -22,7 +22,7 @@ android {
         buildConfigField(
             "String",
             "BASE_URL",
-            "\"api.coincap.io\"",
+            "\"https://api.coincap.io\"",
         )
     }
 

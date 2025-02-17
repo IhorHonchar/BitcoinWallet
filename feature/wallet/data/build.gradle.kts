@@ -46,6 +46,7 @@ dependencies {
     implementation(project(":feature:addTransaction:domain"))
     implementation(project(":core:common"))
     implementation(project(":core:db"))
+    implementation(project(":core:network"))
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)

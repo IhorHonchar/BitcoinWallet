@@ -14,7 +14,7 @@ import ua.honchar.presentation.mvi.WalletEffect
 const val WALLET_SCREEN = "wallet-screen"
 
 fun NavGraphBuilder.wallet(
-    navigateToAddTransaction: () -> Unit
+    navigateToAddTransaction: () -> Unit,
 ) {
     composable(WALLET_SCREEN) {
         val viewModel: WalletViewModel = hiltViewModel()
@@ -22,18 +22,12 @@ fun NavGraphBuilder.wallet(
         val effect = viewModel.uiEffect
         val transactions = viewModel.transactions.collectAsLazyPagingItems()
 
-        LaunchedEffect(key1 = Unit) {
-            effect.collect {
-                when (it) {
-                    WalletEffect.NavigateToAddTransaction -> navigateToAddTransaction()
-                }
-            }
-        }
-
         WalletScreen(
             state = state,
+            effect = effect,
             transactions = transactions,
-            onAction = viewModel::onAction
+            onAction = viewModel::onAction,
+            navigateToAddTransaction = navigateToAddTransaction
         )
     }
 }
