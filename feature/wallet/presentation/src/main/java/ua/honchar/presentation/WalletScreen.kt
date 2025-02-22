@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
@@ -30,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -39,7 +37,9 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
+import ua.honchar.domain.model.ListItem
 import ua.honchar.domain.model.Transaction
+import ua.honchar.domain.model.TransactionDateHeader
 import ua.honchar.presentation.mvi.WalletAction
 import ua.honchar.presentation.mvi.WalletEffect
 import ua.honchar.presentation.mvi.WalletState
@@ -51,7 +51,7 @@ import ua.honchar.ui.theme.Typography
 internal fun WalletScreen(
     state: WalletState,
     effect: Flow<WalletEffect>,
-    transactions: LazyPagingItems<Transaction>,
+    items: LazyPagingItems<ListItem>,
     onAction: (WalletAction) -> Unit,
     navigateToAddTransaction: () -> Unit
 ) {
@@ -68,9 +68,6 @@ internal fun WalletScreen(
             }
         }
     }
-
-    val dateTransactionsMap =
-        transactions.itemSnapshotList.filterNotNull().groupBy { it.date }
 
     EnterIncomeDialogRoot(state.dialogState, onAction)
 
@@ -150,31 +147,20 @@ internal fun WalletScreen(
                     horizontal = 3.dp
                 ),
             ) {
-                dateTransactionsMap.forEach { dateTransactions ->
-                    val date = dateTransactions.key
-                    val items = dateTransactions.value
-                    stickyHeader {
-                        Text(
-                            text = date,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.background)
-                        )
-                    }
-                    items(items) { item ->
-                        TransactionItem(item)
-                    }
-                }
-
-                if (dateTransactionsMap.isEmpty()) {
-                    item {
-                        Text(
-                            text = "There no any transactions",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 20.dp)
-                        )
+                for (index in 0 until items.itemCount) {
+                    when(val item = items[index]) {
+                        is Transaction -> item {
+                            TransactionItem(item)
+                        }
+                        is TransactionDateHeader -> stickyHeader {
+                            Text(
+                                text = item.value,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                            )
+                        }
+                        null -> Unit
                     }
                 }
             }
@@ -225,12 +211,12 @@ private fun TransactionItem(transaction: Transaction) {
 @Composable
 private fun ScreenPreview() {
     val list =
-        flow<PagingData<Transaction>> { PagingData.empty<Transaction>() }.collectAsLazyPagingItems()
+        flow<PagingData<ListItem>> { PagingData.empty<Transaction>() }.collectAsLazyPagingItems()
     BitcoinWalletTheme {
         WalletScreen(
             state = WalletState(currencyRate = "12"),
             effect = emptyFlow(),
-            transactions = list,
+            items = list,
             {}, {}
         )
     }

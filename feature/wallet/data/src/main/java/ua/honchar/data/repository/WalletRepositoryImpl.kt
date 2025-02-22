@@ -3,14 +3,19 @@ package ua.honchar.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.insertSeparators
 import androidx.paging.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import ua.honchar.common.Resource
 import ua.honchar.data.api.CoinsApi
 import ua.honchar.db.dao.TransactionsDao
 import ua.honchar.db.entity.TransactionDB
+import ua.honchar.domain.model.ListItem
 import ua.honchar.domain.model.Transaction
+import ua.honchar.domain.model.TransactionDateHeader
 import ua.honchar.domain.repository.WalletRepository
 import ua.honchar.network.safeApiCall
 import java.text.SimpleDateFormat
@@ -23,8 +28,9 @@ class WalletRepositoryImpl @Inject constructor(
     private val api: CoinsApi
 ) : WalletRepository {
 
-    override fun transactionsPaged(): Flow<PagingData<Transaction>> {
-        return Pager(PagingConfig(pageSize = 20, prefetchDistance = 0)) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun transactionsPaged(): Flow<PagingData<ListItem>> {
+        return Pager(PagingConfig(pageSize = 20, initialLoadSize = 20)) {
             dao.getTransactionsPaged()
         }
             .flow
@@ -40,6 +46,15 @@ class WalletRepositoryImpl @Inject constructor(
                         date = dateFormat.format(calendar.time),
                         time = timeFormat.format(calendar.time)
                     )
+                }
+            }
+            .mapLatest {
+                it.insertSeparators { before: Transaction?, after: Transaction? ->
+                    when {
+                        before == null -> TransactionDateHeader(after?.date.orEmpty())
+                        after != null && before.date != after.date -> TransactionDateHeader(after.date)
+                        else -> null
+                    }
                 }
             }
     }

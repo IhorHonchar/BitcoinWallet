@@ -1,6 +1,5 @@
 package ua.honchar.presentation.navigation
 
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -9,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.paging.compose.collectAsLazyPagingItems
 import ua.honchar.presentation.WalletScreen
 import ua.honchar.presentation.WalletViewModel
-import ua.honchar.presentation.mvi.WalletEffect
 
 const val WALLET_SCREEN = "wallet-screen"
 
@@ -20,12 +18,12 @@ fun NavGraphBuilder.wallet(
         val viewModel: WalletViewModel = hiltViewModel()
         val state by viewModel.uiState.collectAsStateWithLifecycle()
         val effect = viewModel.uiEffect
-        val transactions = viewModel.transactions.collectAsLazyPagingItems()
+        val items = viewModel.dataFlow.collectAsLazyPagingItems()
 
         WalletScreen(
             state = state,
             effect = effect,
-            transactions = transactions,
+            items = items,
             onAction = viewModel::onAction,
             navigateToAddTransaction = navigateToAddTransaction
         )

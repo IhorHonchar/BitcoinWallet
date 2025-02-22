@@ -6,4 +6,4 @@ data class Transaction(
     val category: String,
     val date: String,
     val time: String
-)
+): ListItem
